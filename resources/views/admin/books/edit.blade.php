@@ -1,0 +1,65 @@
+@include('admin.layout.header')
+<body>
+
+@include('admin.layout.navbar')
+@include('admin.layout.sidebar')
+
+		<!--**********************************
+            Content body start
+        ***********************************-->
+        <div class="content-body">
+            <!-- row -->
+			<div class="container-fluid">
+				<!-- Add Order -->
+				<div class="row">
+					<div class="col-12">
+                        <div class="card">
+                            <div class="card-header">
+                                <h4 class="card-title">Borrows requests</h4>
+                            </div>
+                            <div class="card-body">
+                                <form action="{{route('admin.books.postEdit', $TheBook->id)}}" method="POST" enctype="multipart/form-data">
+                                    @csrf
+                                    <div class="row">
+                                        <div class="col-12 mb-3">
+                                            <label class="text-black font-w500">Title</label>
+                                            <input type="text" value="{{old('title') ??  $TheBook->title}}" class="form-control" name="title">
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-12 mb-3">
+                                            <label class="text-black font-w500">Description</label>
+                                            <textarea name="description" rows="9" class="form-control" id="">{{old('description') ??  $TheBook->description}}</textarea>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-12 mb-3">
+                                            <label class="text-black font-w500">Author</label>
+                                            <input type="text" class="form-control" value="{{old('author') ??  $TheBook->author}}" name="author">
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-12 mb-3">
+                                            <label class="text-black font-w500">Tags</label>
+                                            <input type="text" class="form-control" name="tags" value="" placeholder="{{old('tags') ??  $TheBook->tags}}">
+                                        </div>
+                                    </div>
+									<div class="form-group">
+										<button type="submit" class="btn btn-primary">Update</button>
+									</div>
+								</form>
+                            </div>
+                        </div>
+					</div>
+				</div>
+            </div>
+        </div>
+
+    </div>
+    <!--**********************************
+        Main wrapper end
+    ***********************************-->
+@include('admin.layout.scripts')
+
+</body>
+</html>
