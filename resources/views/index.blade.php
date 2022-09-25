@@ -13,7 +13,8 @@
                     <div class="card" style="width: 18rem;">
                         <img src="{{$Book->Thumb}}" class="card-img-top">
                         <div class="card-body">
-                            <h5 class="card-title">{{$Book->title}}</h5>
+                            <h2 class="card-title">{{$Book->title}}</h2>
+                            <small class="card-text d-inline-block bg-danger p-1 mb-2 text-white rounded">{{$Book->author}}</small>
                             <p class="card-text">{{$Book->BookDescription}}</p>
                             @auth
                             <a href="{{route('book.borrow', $Book->id)}}" class="btn btn-primary">Borrow</a>

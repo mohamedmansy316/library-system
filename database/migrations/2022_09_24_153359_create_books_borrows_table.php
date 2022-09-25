@@ -17,7 +17,7 @@ class CreateBooksBorrowsTable extends Migration
             $table->id();
             $table->integer('book_id');
             $table->integer('user_id');
-            $table->string('status');
+            $table->string('status')->default('pending');
             $table->timestamps();
         });
     }

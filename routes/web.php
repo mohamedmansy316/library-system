@@ -13,6 +13,7 @@ Route::middleware('auth')->group(function () {
     Route::get('profile' , 'UserController@getProfile')->name('profile');
     Route::get('borrow/{id}' , 'BooksController@getBookBorrow')->name('book.borrow');
     Route::get('orders' , 'UserController@getOrders')->name('orders');
+    Route::get('order/cancel/{id}' , 'BooksController@getCancelOrder')->name('book.borrow.cancel');
 });
 Route::group(['prefix' => 'admin' , 'middleware' => 'admin'], function(){
     Route::get('/' , 'UserController@getAdmin')->name('admin.home');
@@ -26,8 +27,9 @@ Route::group(['prefix' => 'admin' , 'middleware' => 'admin'], function(){
     });
     Route::prefix('borrows')->group(function(){
         Route::get('/' , 'BooksController@getBorrowsRequests')->name('admin.borrows.all');
-        Route::get('edit/{id}' , 'BooksController@getEditBook')->name('admin.borrows.getEdit');
-        Route::post('edit/{id}' , 'BooksController@postEditBook')->name('admin.borrows.postEdit');
-        Route::get('delete/{id}' , 'BooksController@deleteBook')->name('admin.borrows.delete');
+        Route::get('accept/{id}' , 'BooksController@getAcceptRequest')->name('admin.request.accept');
+        Route::get('refuse/{id}' , 'BooksController@getRefuseRequest')->name('admin.request.refuse');
+        // Route::post('edit/{id}' , 'BooksController@postEditBook')->name('admin.borrows.postEdit');
+        // Route::get('delete/{id}' , 'BooksController@deleteBook')->name('admin.borrows.delete');
     });
 });

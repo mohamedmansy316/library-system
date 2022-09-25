@@ -77,7 +77,6 @@ class BooksController extends Controller
             $BookData =  $r->except('gallery');
             $BookData['slug'] = $TheBook->slug;
             $BookData['tags'] = str_replace(',' , ' ' , $r->tags);
-            // dd($TheBook->slug);
             if($r->has('image')){
                 $img = ImageLib::make($r->image);
                 // backup status
@@ -102,11 +101,26 @@ class BooksController extends Controller
     }
     public function getBookBorrow($id){
         $TheBook = Book::findOrFail($id);
-        if($TheBook->borrowed == 0){
+        if($TheBook->borrowed == 1){
             return back()->withErrors('Book not avaiable now');
         }
-        $SearchForBook = BooksBorrow::where('book_id', $id)->where('user_id', Auth::user()->id )->first();
-        // dd($SearchForBook);
+        $SearchForBook = BooksBorrow::where('book_id', $id)->where('user_id', Auth::user()->id)->where('status', 'pending')->first();
+        if($SearchForBook){
+            return redirect()->route('home')->withErrors('You have already sent a borrowing request');
+        }
+        BooksBorrow::create([
+            'book_id' => $TheBook->id,
+            'user_id' =>  Auth::user()->id ,
+        ]);
+        return redirect()->route('home')->withSuccess('Borrow request sent successfully');
+    }
+    public function getCancelOrder($id){
+        $TheRequest = BooksBorrow::findOrFail($id);
+        // if($TheBook->borrowed == 1){
+        //     return back()->withErrors('Book not avaiable now');
+        // }
+        dd($TheRequest);
+        $SearchForBook = BooksBorrow::where('book_id', $id)->where('user_id', Auth::user()->id)->where('status', 'pending')->first();
         if($SearchForBook){
             return redirect()->route('home')->withErrors('You have already sent a borrowing request');
         }
@@ -123,5 +137,25 @@ class BooksController extends Controller
     public function getBorrowsRequests(){
         $AllRequests = BooksBorrow::where('status', 'pending')->get();
         return view('admin.borrows.requests', compact('AllRequests'));
+    }
+    public function getAcceptRequest($id){
+        $TheRequest = BooksBorrow::findOrFail($id);
+        $TheBook = Book::findOrFail($id);
+        if(!$TheBook){
+            return redirect()->route('admin.borrows.all')->withErrors('Book not available');
+        }
+        $BookData['borrowed'] = 1;
+        $BookData['user_id'] = Auth::user()->id;
+        $RequestData['status'] = 'accepted';
+        // $TheBook->update([
+        //     'user_id' => Auth::user()->id,
+        //     'borrowed' => 1,
+        // ]);
+        // $TheRequest->update([
+        //     'status' => 'accepted',
+        // ]);
+        $TheBook->update($BookData);
+        $TheRequest->update($RequestData);
+        return redirect()->route('admin.borrows.all')->withSuccess('Book Borrowed Successfully');
     }
 }
