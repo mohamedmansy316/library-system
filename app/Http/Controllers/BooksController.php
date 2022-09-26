@@ -1,16 +1,17 @@
 <?php
 
 namespace App\Http\Controllers;
-
+//Models
 use App\Models\Book;
 use App\Models\BooksBorrow;
+//Laravel Packages
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Validator;
+//Composer Packages
 use Image as ImageLib;
 
-class BooksController extends Controller
-{
+class BooksController extends Controller{
     public function getAdminAll(){
         $AllBooks = Book::all();
         return view('admin.books.all', compact('AllBooks'));
@@ -24,36 +25,35 @@ class BooksController extends Controller
             'slug' => 'required|unique:books',
             'description' => 'required',
             'author' => 'required',
-            'isbn' => 'required|unique:books',
+            'isbn' => 'required|unique:books|numeric', //Integer validation
             'tags' => 'required',
-            'image' => 'image|max:45000',
+            'image' => 'mimes:jpg,webp,png|max:5120', //File validation (extensions, application/type)
         ];
         $Validator = Validator::make($r->all(), $Rules);
         if($Validator->fails()){
-            return redirect()->back()->withErrors($Validator)->withInput();
+            return redirect()->back()->withErrors($Validator->errors()->all())->withInput();
         }else{
-            $BookData =  $r->except('gallery');
-            $BookData['slug'] = strtolower(str_replace(' ' , '-' , $r->slug));
-            $BookData['tags'] = str_replace(',' , ' ' , $r->tags);
+            $BookData['slug'] = strtolower(str_replace(' ' , '-' , $r->slug)); //Use regex to clearn out special charachters and arabic chracters
             if($r->has('image')){
+                $ImageName = $BookData['slug'].'.'.$r->image->getClientOriginalExtension();
                 $img = ImageLib::make($r->image);
-                // backup status
+                // backup state
                 $img->backup();
                 // Tiny Thumb
                 $img->fit(60, 60);
-                $img->save('storage/app/public/books/images/small_thumb/'.$BookData['slug'].'.'.$r->image->getClientOriginalExtension());
+                $img->save('storage/app/public/books/images/small_thumb/'.$ImageName);
                 $img->reset();
                 // Thumb
                 $img->fit(250, 250);
-                $img->save('storage/app/public/books/images/thumb/'.$BookData['slug'].'.'.$r->image->getClientOriginalExtension());
+                $img->save('storage/app/public/books/images/thumb/'.$ImageName);
                 $img->reset();
                 // Full Size
                 $img->fit(650, 650);
-                $img->save('storage/app/public/books/images/full_size/'.$BookData['slug'].'.'.$r->image->getClientOriginalExtension());
+                $img->save('storage/app/public/books/images/full_size/'.$ImageName);
                 $img->reset();
-                $BookData['image'] = $BookData['slug'].'.'.$r->image->getClientOriginalExtension();
+                $BookData['image'] = $ImageName;
             }
-            $NewBook = Book::create($BookData);
+            Book::create($BookData);
             return redirect()->route('admin.books.all')->withSuccess('Book Created Successfully');
         }
     }
@@ -104,13 +104,12 @@ class BooksController extends Controller
         if($TheBook->borrowed == 1){
             return back()->withErrors('Book not avaiable now');
         }
-        $SearchForBook = BooksBorrow::where('book_id', $id)->where('user_id', Auth::user()->id)->where('status', 'pending')->first();
-        if($SearchForBook){
+        if(auth()->user()->hasRequestedBook($id)){
             return redirect()->route('home')->withErrors('You have already sent a borrowing request');
         }
         BooksBorrow::create([
             'book_id' => $TheBook->id,
-            'user_id' =>  Auth::user()->id ,
+            'user_id' =>  auth()->user()->id ,
         ]);
         return redirect()->route('home')->withSuccess('Borrow request sent successfully');
     }
@@ -125,8 +124,8 @@ class BooksController extends Controller
             return redirect()->route('home')->withErrors('You have already sent a borrowing request');
         }
         BooksBorrow::create([
-            'book_id' => $TheBook->id,
-            'user_id' =>  Auth::user()->id ,
+            'book_id' => $TheRequest->Book->id,
+            'user_id' =>  auth()->user()->id ,
         ]);
         return redirect()->route('home')->withSuccess('Borrow request sent successfully');
     }
@@ -135,27 +134,21 @@ class BooksController extends Controller
         return redirect()->route('admin.books.all')->withSuccess('Book Deleted Successfully');
     }
     public function getBorrowsRequests(){
-        $AllRequests = BooksBorrow::where('status', 'pending')->get();
+        $AllRequests = BooksBorrow::where('status', 'pending')->get(); //Consider exporting the logic to sperate function in the model (maybe)
         return view('admin.borrows.requests', compact('AllRequests'));
     }
     public function getAcceptRequest($id){
-        $TheRequest = BooksBorrow::findOrFail($id);
-        $TheBook = Book::findOrFail($id);
-        if(!$TheBook){
+        $TheRequest = BooksBorrow::find($id);
+        if(!$TheRequest->Book->exists){
             return redirect()->route('admin.borrows.all')->withErrors('Book not available');
         }
-        $BookData['borrowed'] = 1;
-        $BookData['user_id'] = Auth::user()->id;
-        $RequestData['status'] = 'accepted';
-        // $TheBook->update([
-        //     'user_id' => Auth::user()->id,
-        //     'borrowed' => 1,
-        // ]);
-        // $TheRequest->update([
-        //     'status' => 'accepted',
-        // ]);
-        $TheBook->update($BookData);
-        $TheRequest->update($RequestData);
+        $TheRequest->update([
+            'status' => 'accepted',
+        ]);
+        $TheRequest->Book->update([
+            'user_id' => auth()->user()->id,
+            'borrowed' => 1,
+        ]);
         return redirect()->route('admin.borrows.all')->withSuccess('Book Borrowed Successfully');
     }
 }

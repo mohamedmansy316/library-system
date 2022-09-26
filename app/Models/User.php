@@ -41,4 +41,19 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+    public function hasRequestedBook($book_id){
+        return BooksBorrow::where([
+            ['book_id' , $book_id],
+            ['user_id' , $this->id],
+            ['status', 'pending']
+        ])->count() ? true : false;
+    }
+
+    // Relations
+    public function Orders (){
+        return $this->hasMany(BooksBorrow::class);
+    }
+
+
+
 }

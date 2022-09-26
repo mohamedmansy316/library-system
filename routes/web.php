@@ -1,20 +1,30 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Auth;
+//Controllers
 
-Route::get('/', function () {
-    return view('index');
-});
+
+//Hpmepage
 Route::get('/', 'HomeController@getHome')->name('home');
+// Route::get('/', [HomeController::class , 'getHome'])->name('home');
 
+/*
+    Authentication Routes
+    login ,logout , register
+    Run php artisan route:list for more details about the routes and endpoints
+*/
 Auth::routes();
+
+//User / Profile
 Route::middleware('auth')->group(function () {
     Route::get('logout' , 'UserController@logout')->name('logout');
     Route::get('profile' , 'UserController@getProfile')->name('profile');
     Route::get('borrow/{id}' , 'BooksController@getBookBorrow')->name('book.borrow');
-    Route::get('orders' , 'UserController@getOrders')->name('orders');
+    // Route::get('orders' , 'UserController@getOrders')->name('orders');
     Route::get('order/cancel/{id}' , 'BooksController@getCancelOrder')->name('book.borrow.cancel');
 });
+//Admin & Management System
 Route::group(['prefix' => 'admin' , 'middleware' => 'admin'], function(){
     Route::get('/' , 'UserController@getAdmin')->name('admin.home');
     Route::prefix('books')->group(function(){

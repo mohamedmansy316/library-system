@@ -17,7 +17,9 @@
                             <small class="card-text d-inline-block bg-danger p-1 mb-2 text-white rounded">{{$Book->author}}</small>
                             <p class="card-text">{{$Book->BookDescription}}</p>
                             @auth
-                            <a href="{{route('book.borrow', $Book->id)}}" class="btn btn-primary">Borrow</a>
+                                @if(!auth()->user()->hasRequestedBook($Book->id))
+                                    <a href="{{route('book.borrow', $Book->id)}}" class="btn btn-primary">Borrow</a>
+                                @endif
                             @endauth
                         </div>
                     </div>

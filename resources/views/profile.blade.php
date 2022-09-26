@@ -8,7 +8,7 @@
                 <table class="table">
                     <thead>
                     <tr>
-                        <th scope="col">#</th>
+                        <th scope="col">ID</th>
                         <th scope="col">Title</th>
                         <th scope="col">ISBN</th>
                         <th scope="col">Status</th>
@@ -17,11 +17,11 @@
                     </tr>
                     </thead>
                     <tbody>
-                        @forelse ($Orders as $key => $Order)
+                        @forelse (auth()->user()->Orders as $Order)
                         <tr>
-                            <th scope="row">{{$key+1}}</th>
+                            <td>{{$Order->id}}</td>
                             <td>{{$Order->Book->title}}</td>
-                            <td>{{$Order->Book->isbn}}</td>
+                            <td>{{$Order->Book->isbn ?? 'N/A'}}</td>
                             <td>{{$Order->status}}</td>
                             <td>{{$Order->created_at->format('d M, Y')}}</td>
                             <td>
