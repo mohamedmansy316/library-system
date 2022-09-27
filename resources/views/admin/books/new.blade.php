@@ -21,38 +21,38 @@
                                     @csrf
                                     <div class="row">
                                         <div class="col-12 col-md-6 mb-3">
-                                            <label class="text-black font-w500">Title</label>
-                                            <input type="text" class="form-control" name="title">
+                                            <label class="text-black font-w500">Title <span class="text-danger">*</span></label>
+                                            <input type="text" class="form-control" name="title" required>
                                         </div>
                                         <div class="col-12 col-md-6 mb-3">
-                                            <label class="text-black font-w500">slug</label>
-                                            <input type="text" class="form-control" name="slug">
+                                            <label class="text-black font-w500">slug <span class="text-danger">*</span></label>
+                                            <input type="text" class="form-control" name="slug" required>
                                         </div>
                                     </div>
                                     <div class="row">
                                         <div class="col-12 mb-3">
-                                            <label class="text-black font-w500">Description</label>
-                                            <textarea name="description" rows="9" class="form-control" id=""></textarea>
+                                            <label class="text-black font-w500">Description <span class="text-danger">*</span></label>
+                                            <textarea name="description" rows="9" class="form-control" id="" required></textarea>
                                         </div>
                                     </div>
                                     <div class="row">
                                         <div class="col-12 col-md-6 mb-3">
-                                            <label class="text-black font-w500">Author</label>
-                                            <input type="text" class="form-control" name="author">
+                                            <label class="text-black font-w500">Author <span class="text-danger">*</span></label>
+                                            <input type="text" class="form-control" name="author" required>
                                         </div>
                                         <div class="col-12 col-md-6 mb-3">
-                                            <label class="text-black font-w500">ISBN</label>
-                                            <input type="text" class="form-control" name="isbn">
+                                            <label class="text-black font-w500">ISBN <span class="text-danger">*</span></label>
+                                            <input type="text" class="form-control" name="isbn" required>
                                         </div>
                                     </div>
                                     <div class="row">
                                         <div class="col-12 col-md-6 mb-3">
-                                            <label class="text-black font-w500">Image</label>
-                                            <input type="file" class="form-control" name="image">
+                                            <label class="text-black font-w500">Image <span class="text-danger">*</span></label>
+                                            <input type="file" class="form-control" name="image" required>
                                         </div>
                                         <div class="col-12 col-md-6 mb-3">
-                                            <label class="text-black font-w500">Tags</label>
-                                            <input type="text" class="form-control" name="tags">
+                                            <label class="text-black font-w500">Tags <span class="text-danger">*</span></label>
+                                            <input type="text" class="form-control" name="tags" placeholder="Separate between tags by hyphens" >
                                         </div>
                                     </div>
 									<div class="form-group">

@@ -8,9 +8,7 @@ use Illuminate\Http\Request;
 
 class UserController extends Controller
 {
-    public function getAdmin(){
-        return view('admin.index');
-    }
+
     public function getProfile(){
         /**
          * Register a binding with the container.
@@ -24,10 +22,6 @@ class UserController extends Controller
          */
         return view('profile');
     }
-    // public function getOrders(){
-    //         $TheUser = auth()->user()->id;
-    //         return view('profile', compact('TheUser'));
-    // }
     public function logout(){
         auth()->logout();
         return redirect()->route('home')->withSuccess('You have successfully logged out');

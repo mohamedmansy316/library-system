@@ -9,7 +9,7 @@ Sidebar start
                     <span class="nav-text">Books</span>
                 </a>
                 <ul aria-expanded="false">
-                    <li><a href="{{route('admin.books.all')}}">view all</a></li>
+                    <li><a href="{{route('admin.books.all')}}">View all</a></li>
                     <li><a href="{{route('admin.books.getCreate')}}">Add new</a></li>
                 </ul>
             </li>
@@ -18,7 +18,7 @@ Sidebar start
                 <span class="nav-text">Borrows requests</span>
             </a>
             <ul aria-expanded="false">
-                <li><a href="{{route('admin.borrows.all')}}">view all</a></li>
+                <li><a href="{{route('admin.borrows.all')}}">View all</a></li>
             </ul>
         </li>
     </div>

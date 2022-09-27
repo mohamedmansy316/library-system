@@ -12,6 +12,7 @@ class BooksBorrow extends Model
     public function Book(){
         return $this->belongsTo(Book::class, 'book_id')->withDefault([
             'title' => 'Deleted Book',
+            'isbn' => 'Deleted Book',
         ]);
     }
     public function User(){

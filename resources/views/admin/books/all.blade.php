@@ -14,7 +14,7 @@
 					<div class="col-12">
                         <div class="card">
                             <div class="card-header">
-                                <h4 class="card-title">Basic Datatable</h4>
+                                <h4 class="card-title">All Book</h4>
                             </div>
                             <div class="card-body">
                                 <div class="table-responsive">
@@ -22,10 +22,10 @@
                                         <thead>
                                             <tr>
                                                 <th>Title</th>
-                                                <th>Description</th>
                                                 <th>Author</th>
                                                 <th>ISBM</th>
                                                 <th>Image</th>
+                                                <th>Status</th>
                                                 <th>Action</th>
                                             </tr>
                                         </thead>
@@ -33,10 +33,10 @@
                                             @forelse ($AllBooks as $Book)
                                             <tr>
                                                 <td>{{$Book->title}}</td>
-                                                <td>{{$Book->description}}</td>
                                                 <td>{{$Book->author}}</td>
                                                 <td>{{$Book->isbn}}</td>
                                                 <td><img width="100px" src="{{$Book->Thumb}}" alt=""></td>
+                                                <td>{{$Book->borrowed == 1 ? "Borrowed" : "Available"}}</td>
                                                 <td>
                                                     <div class="d-flex">
                                                         <a href="{{route('admin.books.getEdit' , $Book->id)}}" class="btn btn-primary shadow btn-xs sharp mr-1"><i class="fa fa-pencil"></i></a>
