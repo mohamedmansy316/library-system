@@ -34,4 +34,11 @@ class BooksController extends Controller{
         ]);
         return redirect()->route('home')->withSuccess('Cancel request sent successfully');
     }
+    public function getReverseBook($id){
+        $TheRequest = BooksBorrow::findOrFail($id);
+        $TheRequest->update([
+            'status' =>  'pending_reverse' ,
+        ]);
+        return redirect()->route('home')->withSuccess('Reverse request sent successfully');
+    }
 }

@@ -5,13 +5,13 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class BooksBorrow extends Model
+class BookReverse extends Model
 {
     use HasFactory;
-    protected $guarded = [];
+    protected $fillable = ['user_id', 'book_id', 'status'];
     public function Book(){
         /**
-         * relation: borrow request belongs to one book
+         * relation: reverse request belongs to one book
          *
          * @return related book
          *
@@ -23,13 +23,14 @@ class BooksBorrow extends Model
     }
     public function User(){
         /**
-         * relation: borrow request belongs to one user
+         * relation: reverse request belongs to one user
          *
-         * @return related book
+         * @return related user
          *
          */
         return $this->belongsTo(User::class, 'user_id')->withDefault([
             'name' => 'Deleted user',
         ]);
     }
+
 }

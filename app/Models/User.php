@@ -48,12 +48,14 @@ class User extends Authenticatable
             ['status', 'pending']
         ])->count() ? true : false;
     }
-
     // Relations
     public function Orders (){
+        /**
+         * relation: user has many borroes reuests
+         *
+         * @return related Books Borrow
+         *
+         */
         return $this->hasMany(BooksBorrow::class);
     }
-
-
-
 }
