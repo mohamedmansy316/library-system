@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 //Models
 use App\Models\Book;
+use App\Models\BookReverse;
 use App\Models\BooksBorrow;
 //Laravel Packages
 use Illuminate\Http\Request;
@@ -13,17 +14,32 @@ use Image as ImageLib;
 class AdminController extends Controller
 {
     public function getAdmin(){
-        return view('admin.index');
+        /**.
+         * @return redirect to All books page
+         */
+        return redirect()->route('admin.books.all');
     }
     public function getAllBooks(){
+        /**.
+         * @return redirect to All books page
+         */
         $AllBooks = Book::all();
         return view('admin.books.all', compact('AllBooks'));
     }
 
     public function getCreateBook(){
+        /**.get books Creation page
+         * @return redirect to All books page
+         */
         return view('admin.books.new');
     }
     public function postCreateBook(Request $r){
+        /**
+         * Create a new book
+         *
+         * @param  array $request
+         * @return all book page
+         */
         $Rules = [
             'title' => 'required|min:5',
             'slug' => 'required|unique:books',
@@ -62,10 +78,23 @@ class AdminController extends Controller
         }
     }
     public function getEditBook($id){
+        /**
+         * get edit book page
+         *
+         * @param integer $id (book id)
+         * @return edit book page
+         */
         $TheBook = Book::findOrFail($id);
         return view('admin.books.edit' , compact('TheBook'));
     }
     public function postEditBook(Request $r, $id){
+        /**
+         * send edit book reuest
+         *
+         * @param  array $request
+         * @param  integer $id (book id)
+         * @return all book page
+         */
         $TheBook = Book::findOrFail($id);
 
         $Rules = [
@@ -78,36 +107,42 @@ class AdminController extends Controller
         if($Validator->fails()){
             return redirect()->back()->withErrors($Validator->errors()->all())->withInput();
         }else{
-            $BookData =  $r->except('gallery');
             $BookData['slug'] = $TheBook->slug;
             $BookData['tags'] = str_replace(',' , ' ' , $r->tags);
             if($r->has('image')){
+                $ImageName = $BookData['slug'].'.'.$r->image->getClientOriginalExtension();
                 $img = ImageLib::make($r->image);
                 // backup status
                 $img->backup();
                 // Tiny Thumb
                 $img->fit(60, 60);
-                $img->save('storage/app/public/books/images/small_thumb/'.$BookData['slug'].'.'.$r->image->getClientOriginalExtension());
+                $img->save('storage/app/public/books/images/small_thumb/'.$ImageName);
                 $img->reset();
                 // Thumb
                 $img->fit(250, 250);
-                $img->save('storage/app/public/books/images/thumb/'.$BookData['slug'].'.'.$r->image->getClientOriginalExtension());
+                $img->save('storage/app/public/books/images/thumb/'.$ImageName);
                 $img->reset();
                 // Full Size
                 $img->fit(650, 650);
-                $img->save('storage/app/public/books/images/full_size/'.$BookData['slug'].'.'.$r->image->getClientOriginalExtension());
+                $img->save('storage/app/public/books/images/full_size/'.$ImageName);
                 $img->reset();
-                $BookData['image'] = $BookData['slug'].'.'.$r->image->getClientOriginalExtension();
+                $BookData['image'] = $ImageName;
             }
             $TheBook->update($BookData);
             return redirect()->route('admin.books.all')->withSuccess('Book Created Successfully');
         }
     }
     public function getBorrowsRequests(){
-        $AllRequests = BooksBorrow::where('status', 'pending')->get(); //Consider exporting the logic to sperate function in the model (maybe)
+        $AllRequests = BooksBorrow::where('status', 'pending')->get();
         return view('admin.borrows.requests', compact('AllRequests'));
     }
-    public function getAcceptRequest($id){
+    public function getAcceptBorrow($id){
+                /**
+         * Accept borrow request
+         *
+         * @param  integer $id (book id)
+         * @return all book page
+         */
         $TheRequest = BooksBorrow::find($id);
         if($TheRequest->status == "canceled"){
             return redirect()->route('admin.borrows.all')->withErrors('Request canceled from user');
@@ -124,7 +159,13 @@ class AdminController extends Controller
         ]);
         return redirect()->route('admin.borrows.all')->withSuccess('Book Borrowed Successfully');
     }
-    public function getRefuseRequest($id){
+    public function getRefuseBorrow($id){
+                /**
+         * get all borrow requests page
+         *
+         * @param  integer $id (borrow reuqest id)
+         * @return all borrowed requests page
+         */
         $TheRequest = BooksBorrow::find($id);
         if(!$TheRequest->Book->exists){
             return redirect()->route('admin.borrows.all')->withErrors('Book not available');
@@ -133,6 +174,40 @@ class AdminController extends Controller
             'status' => 'refused',
         ]);
         return redirect()->route('admin.borrows.all')->withSuccess('Request Refused Successfully');
+    }
+    public function getReverseRequests(){
+            /**
+         *get all reversed requests page
+         *
+         * @return all reversed requests page
+         *
+         * @throws \Exception
+         */
+        $AllRequests = BooksBorrow::where('status', 'pending_reverse')->get();
+        return view('admin.reverse.requests', compact('AllRequests'));
+    }
+    public function getAcceptReverse($id){
+        /**
+         * accept reverse request
+         *
+         * @param  integer $id (request id)
+         * @return all reverse requests
+         */
+        $TheRequest = BooksBorrow::find($id);
+        if(!$TheRequest->Book->exists){
+            $TheRequest->update([
+                'status' => 'reversed',
+            ]);
+            return redirect()->route('admin.reverse.all')->withSuccess('The book reversed but it not found in books system');
+        }
+        $TheRequest->update([
+            'status' => 'reversed',
+        ]);
+        $TheRequest->Book->update([
+            'user_id' => NULL,
+            'borrowed' => 0,
+        ]);
+        return redirect()->route('admin.reverse.all')->withSuccess('Book Reversed Successfully');
     }
     public function deleteBook($id){
         Book::find($id)->delete();
