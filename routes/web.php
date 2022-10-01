@@ -25,6 +25,7 @@ Route::middleware('auth')->group(function () {
     Route::get('profile', [UserController::class , 'getProfile'])->name('profile');
     Route::get('borrow/{id}', [BooksController::class , 'getBookBorrow'])->name('book.borrow');
     Route::get('order/cancel/{id}', [BooksController::class , 'getCancelOrder'])->name('book.borrow.cancel');
+    Route::get('order/reverse/{id}', [BooksController::class , 'getReverseBook'])->name('book.borrow.reverse');
 });
 //Admin & Management System
 Route::group(['prefix' => 'admin' , 'middleware' => 'admin'], function(){
@@ -39,7 +40,12 @@ Route::group(['prefix' => 'admin' , 'middleware' => 'admin'], function(){
     });
     Route::prefix('borrows')->group(function(){
     Route::get('/', [AdminController::class , 'getBorrowsRequests'])->name('admin.borrows.all');
-    Route::get('accept/{id}', [AdminController::class , 'getAcceptRequest'])->name('admin.request.accept');
-    Route::get('refuse/{id}', [AdminController::class , 'getRefuseRequest'])->name('admin.request.refuse');
+    Route::get('accept/{id}', [AdminController::class , 'getAcceptBorrow'])->name('admin.request.accept');
+    Route::get('refuse/{id}', [AdminController::class , 'getRefuseBorrow'])->name('admin.request.refuse');
     });
+    Route::prefix('reverse')->group(function(){
+        Route::get('/', [AdminController::class , 'getReverseRequests'])->name('admin.reverse.all');
+        Route::get('accept/{id}', [AdminController::class , 'getAcceptReverse'])->name('admin.reverse.accept');
+        // Route::get('refuse/{id}', [AdminController::class , 'getRefuseBorrow'])->name('admin.request.refuse');
+        });
 });

@@ -27,6 +27,8 @@
                             <td>
                                 @if ($Order->status == 'pending')
                                 <a href="{{route('book.borrow.cancel', $Order->id)}}">Cancel</a>
+                                @elseif ($Order->status == 'accepted')
+                                <a href="{{route('book.borrow.reverse', $Order->id)}}">Reverse</a>
                                 @endif
                             </td>
                         </tr>
