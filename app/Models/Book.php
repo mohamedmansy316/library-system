@@ -43,4 +43,25 @@ class Book extends Model
          */
         return Str::limit($this->description, Book::LIMIT);
     }
+    public function BookBorrow(){
+        /**
+         * relation: Book has mansy borrows
+         *
+         * @return related book
+         *
+         */
+        return $this->hasMany(BooksBorrow::class, 'book_id')->withDefault([
+            'title' => 'Deleted Book',
+            'isbn' => 'Deleted Book',
+        ]);
+    }
+    public function BookReverse(){
+        /**
+         * relation: Book has mansy returns
+         *
+         * @return related book
+         *
+         */
+        return $this->hasMany(BookReverse::class, 'book_id');
+    }
 }

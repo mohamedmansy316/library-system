@@ -56,6 +56,6 @@ class User extends Authenticatable
          * @return related Books Borrow
          *
          */
-        return $this->hasMany(BooksBorrow::class);
+        return $this->hasMany(BooksBorrow::class, 'user_id');
     }
 }
